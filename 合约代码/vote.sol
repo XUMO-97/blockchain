@@ -24,7 +24,7 @@ contract vote {
     //具体的投票主题
     proposal[] public proposals;
 
-    //构造函数
+    //构造函数，如果在比较老的编译器版本中，可以使用function vote(){}作为构造函数
     constructor (bytes32[] proposalname) public {
         //初始化投票的发起人，就是当前合约的部署者，也可以改变成别人
         chairperson = msg.sender;
