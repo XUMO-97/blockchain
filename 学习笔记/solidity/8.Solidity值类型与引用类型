@@ -1,0 +1,50 @@
+由于Solidity是一个静态类型的语言，所以编译时需明确指定变量的类型（包括本地变量或状态变量），Solidity编程语言提供了一些基本类型(elementary types)可以用来组合成复杂类型。
+
+1.值类型(Value Type)
+
+值类型包含：
+
+布尔(Booleans)
+整型(Integer)
+地址(Address)
+定长字节数组(fixed byte arrays)
+有理数和整型(Rational and Integer Literals，String literals)
+枚举类型(Enums)
+函数(Function Types)
+
+例如：
+
+int a = 100;  // a == 100
+int b = a;   // b == 100,a == 100
+b = 300;    // b == 300,a == 100
+
+由上面的数据看，执行 b = a时，会将a的值临时拷贝一份传给b，所以当你修改b时，其实与a没任何关系。
+
+2.引用类型(Reference Types)
+
+引用类型包含：
+
+不定长字节数组（bytes）
+字符串（string）
+数组（Array）
+结构体（Struts）
+引用类型，赋值时，我们可以值传递，也可以引用即地址传递，如果是值传递，和上面的案例一样，修改新变量时，不会影响原来的变量值，如果是引用传递，那么当你修改新变量时，原来变量的值会跟着变化，这是因为新就变量同时指向同一个地址的原因。
+
+引用类型中如何类比值传递？
+
+值传递伪代码（以iOS中可变字符串NSMutableString为例子）：
+
+//创建一个可变的字符串name
+NSMutableString *name = [@"xumo" mutableCopy];  // name == "xumo"
+
+NSMutableString *name1 = [name copy]; //name1 == "xumo", name == "xumo"
+
+name1 = "xumo123"; //name1 == "xumo123",name == "xumo"
+引用类型中如何类比引用传递？
+
+//创建一个可变的字符串name
+NSMutableString *name = [@"xumo" mutableCopy];  // name == "xumo"
+
+NSMutableString *name1 = name; //name1 == "xumo", name == "xumo"
+
+name1 = "xumo123"; //name1 == "xumo123",name == "xumo123"

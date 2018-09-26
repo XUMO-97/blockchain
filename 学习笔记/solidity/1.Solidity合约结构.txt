@@ -1,0 +1,35 @@
+1.什么是智能合约？
+	在区块链上运行的程序，通常称为智能合约（Smart Contract）。
+	所以通常会把写区块链程序改称写智能合约。
+	简单点来讲，合约就是运行在区块链上的一段程序。
+
+2.一个完整的智能合约与注释。
+
+pragma solidity ^0.4.4; //pragma solidity表示solidity版本声明，0.4.4为版本，^表示向上兼容但不包括0.0.5及以上。
+
+contract Counter {       //contract是合约声明的关键字，counter为合约名字，合起来就是声明一个Counter合约。
+ 
+    uint count = 0;  //count和owner是状态变量，合约中的状态变量相当于类中的属性变量。
+    address owner;
+
+    function Counter() { //function Counter()函数名与合约名相同时，此函数是合约的构造函数，当合约对象创建时，会先调用构造函数对相关数据进行初始化处理
+       owner = msg.sender;
+    } 
+
+    function increment() public {  //unction increment() public和function getCount() constant returns (uint)都是Counter合约的成员函数
+       uint step = 10;             //当调用increment()函数时，会让状态变量count增加step
+       if (owner == msg.sender) {  //increment()方法中声明的step就是局部变量。局部变量只在离它最近的{}内容使用。
+          count = count + step;
+       }
+    }
+ 
+    function getCount() constant returns (uint) {   //当调用getCount()时会得到状态变量count的值
+       return count;
+    }
+
+    function kill() {
+       if (owner == msg.sender) { 
+          selfdestruct(owner);   //析构函数和构造函数对应，构造函数是初始化数据，而析构函数是销毁数据。
+       }                         //在counter合约中，当我们手动调用kill函数时，就会调用selfdestruct(owner)销毁当前合约。
+    }
+}

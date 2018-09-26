@@ -1,0 +1,19 @@
+/* 我们的Counter合约将increment方法被调用的次数存储到count属性中。并且每个人都可以通过getCount方法获取区块链上count的值。 */
+pragma solidity ^0.4.4;
+
+contract Counter {
+
+    /* 定义一个uint类型的count变量 */
+    uint count = 0;
+
+    /* 当这个方法被调用时count的值会加1 */
+    function increment() public {
+       count = count + 1;
+    }
+
+    /* 读取count数据 */
+    function getCount() constant returns (uint) {
+       return count;
+    }
+
+}

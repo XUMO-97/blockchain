@@ -1,0 +1,22 @@
+ActionChoices就是一个自定义的整型，当枚举数不够多时，它默认的类型为uint8，当枚举数足够多时，它会自动变成uint16，下面的GoLeft == 0,GoRight == 1, GoStraight == 2, SitStill == 3。在setGoStraight方法中，我们传入的参数的值可以是0 - 3当传入的值超出这个范围时，就会中断报错。
+
+pragma solidity ^0.4.4;
+
+contract test {
+    enum ActionChoices { GoLeft, GoRight, GoStraight, SitStill }
+    ActionChoices _choice;
+    ActionChoices constant defaultChoice = ActionChoices.GoStraight;
+
+    function setGoStraight(ActionChoices choice) public {
+        _choice = choice;
+    }
+
+    function getChoice() constant public returns (ActionChoices) {
+        return _choice;
+    }
+
+    function getDefaultChoice() pure public returns (uint) {
+        return uint(defaultChoice);
+    }
+}
+

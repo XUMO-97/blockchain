@@ -1,0 +1,7 @@
+报错:Could not compile source code. 
+
+ No visibility specified. Defaulting to "public". 
+    function getCount() constant returns (uint) {
+    ^ (Relevant source part starts here and spans across multiple lines).
+
+解决方法：在函数后面returns前面添加“public”关键词

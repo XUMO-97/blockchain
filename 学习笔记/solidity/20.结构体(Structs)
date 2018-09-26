@@ -1,0 +1,69 @@
+一.自定义结构体
+
+pragma solidity ^0.4.4;
+
+contract Students {
+    
+    struct Person {
+        uint age;
+        uint stuID;
+        string name;
+    }
+
+}
+
+Person就是我们自定义的一个新的结构体类型，结构体里面可以存放任意类型的值
+
+二.初始化一个结构体
+
+初始化一个storage类型的状态变量
+
+1.方法一
+
+pragma solidity ^0.4.4;
+
+contract Students {
+    
+    struct Person {
+        uint age;
+        uint stuID;
+        string name;
+    }
+
+    Person _person = Person(18,101,"xumo");
+
+}
+
+2.方法二
+
+pragma solidity ^0.4.4;
+
+contract Students {
+    
+    struct Person {
+        uint age;
+        uint stuID;
+        string name;
+    }
+
+    Person _person = Person({age:18,stuID:101,name:"xumo"});
+
+}
+
+初始化一个memory类型的变量
+
+pragma solidity ^0.4.4;
+
+contract Students {
+    
+    struct Person {
+        uint age;
+        uint stuID;
+        string name;
+    }
+    
+    function personInit() {
+        
+        Person memory person = Person({age:18,stuID:101,name:"liyuechun"});
+    }
+}

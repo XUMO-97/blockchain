@@ -1,0 +1,170 @@
+一.以太坊钱包地址位数验证
+
+以太坊中的地址的长度20字节，一字节等于8位，一共160位，所以address其实亦可以用unit160来声明
+
+假如一个以太坊钱包的地址为0xF055775eBD516e7419ae486C1d50C682d4170645
+0x代表十六进制，以太坊钱包地址是以16进制的形式呈现,如果将F055775eBD516e7419ae486C1d50C682d4170645进行二进制转换，它的二进制刚好160位
+
+二.常识
+
+合约拥有者:msg.sender就是当前调用方法时的发起人，一个合约部署后，通过钱包地址操作合约的人很多，但是如何正确判断谁是合约的拥有者，判断方式很简单，就是第一次部署合约时，谁出的gas，谁就对合约具有拥有权
+
+pragma solidity ^0.4.4;
+
+contract Test {
+    
+    address public _owner;
+    
+    uint public _number;
+
+    function Test() {
+        _owner = msg.sender;
+        _number = 100;
+    }
+    
+    function msgSenderAddress() constant returns (address) {
+        return msg.sender;
+    }
+    
+    function setNumberAdd1() {
+        _number = _number + 5;
+    }
+    
+    function setNumberAdd2() {
+        if (_owner == msg.sender) {
+            _number = _number + 10;
+        }
+    }
+    
+    
+    function returnContractAddress() constant returns (address) {
+        return this;
+    }
+    
+}
+一个合约部署后，会有一个合约地址，这个合约地址就代表合约自己。
+
+this在合约中到底是msg.sender还是合约地址？
+this即是当前合约地址
+
+三.成员变量和函数
+
+1.balance
+
+如果我们需要查看一个地址的余额，我们可以使用balance属性进行查看
+
+pragma solidity ^0.4.4;
+
+contract addressBalance{
+    
+    function getBalance(address addr) constant returns (uint){
+        return addr.balance;
+    }
+
+}
+
+2.this 查看当前合约地址余额
+
+pragma solidity ^0.4.4;
+
+contract addressBalance{
+    
+    function getBalance(address addr) constant returns (uint){
+        return addr.balance;
+    }
+
+}
+
+当前合约地址余额为0 wei
+this代表当前合约地址，那么如果在代码中我们只是想简单查询当前合约余额，我们可以直接通过this.balance进行查询
+
+pragma solidity ^0.4.4;
+
+contract addressBalance{
+    
+    function getBalance() constant returns (uint){
+        return this.balance; //直接返回余额数量
+    }
+    
+    function getContractAddrees() constant returns (address){
+        return this; //直接返回地址
+    }
+    
+    function getBalance(address addr) constant returns (uint){
+        return addr.balance; //需要输入地址再返回余额数量
+    }
+
+}
+
+3.transfer
+
+transfer:从合约发起方向从某个地址转入以太币(单位是wei)，地址无效或者合约发起方余额不足时，代码将抛出异常并停止转账
+
+pragma solidity ^0.4.4;
+
+contract PayableKeyword{ 
+    
+    
+    // 从合约发起方向 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c 地址转入 msg.value 个以太币，单位是 wei
+    function deposit() payable{
+        
+        address Account2 = 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c;
+        Account2.transfer(msg.value);
+    }
+  
+  
+    // 读取 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c 地址的余额
+    function getAccount2Balance() constant returns (uint) {
+        
+        address Account2 = 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c;
+
+        return Account2.balance;
+    }  
+    
+    // 读取合约发起方的余额
+    function getOwnerBalance() constant returns (uint) {
+        
+        address Owner = msg.sender;
+        return Owner.balance;
+    } 
+    
+}
+
+4.send
+
+send:send相对transfer方法较底层，不过使用方法和transfer相同，都是从合约发起方向某个地址转入以太币(单位是wei)，地址无效或者合约发起方余额不足时，send不会抛出异常，而是直接返回false
+
+pragma solidity ^0.4.4;
+
+contract PayableKeyword{ 
+    
+    
+    function deposit() payable returns (bool){
+        
+        address Account2 = 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c;
+        return Account2.send(msg.value);
+    }
+  
+  
+    function getAccount2Balance() constant returns (uint) {
+        
+        address Account2 = 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c;
+
+        return Account2.balance;
+    }  
+    
+    
+    function getOwnerBalance() constant returns (uint) {
+        
+        address Owner = msg.sender;
+        return Owner.balance;
+    } 
+    
+}
+
+Warning: send()方法执行时有一些风险
+
+调用递归深度不能超过1024
+如果gas不够，执行会失败
+所以使用这个方法要检查成功与否
+transfer相对send较安全

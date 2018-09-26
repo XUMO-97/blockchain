@@ -1,0 +1,30 @@
+pragma solidity ^0.4.4;
+
+contract Counter {
+ 
+    uint count = 0;
+    address owner;
+
+    function Counter() {
+       owner = msg.sender;
+    } 
+
+    function increment() public {
+       if (owner == msg.sender) {
+          count = count + 1;
+       }
+    }
+ 
+    function getCount() constant returns (uint) {
+       return count;
+    }
+
+    function kill() {
+       if (owner == msg.sender) { // 检查谁在调用
+          selfdestruct(owner); // 销毁合约
+       }
+    }
+ 
+}
+
+当一个合约通过kill方法将其杀死，那么我们将不能再和这个合约进行交互，如果一个合约被销毁，那么当前地址指向的是一个僵尸对象，这个僵尸对象调用任何方法都会抛出异常。你想销毁合约，需要调用selfdestruct(address)才能将其进行销毁。

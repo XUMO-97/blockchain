@@ -1,0 +1,9 @@
+1.打开终端
+geth --networkid 123 --datadir blockchainData  console
+2.etherumwallet连接私链
+ethereumwallet --rpc geth.ipc文件路径（ethereumwallet --rpc /home/xumo/blockchainData/geth.ipc）
+3.geth中的操作指令
+	查看余额eth.getBalance("")
+	设置挖矿账号miner.setEtherbase("")
+	开始挖矿miner.start()
+	结束挖矿miner.stop()

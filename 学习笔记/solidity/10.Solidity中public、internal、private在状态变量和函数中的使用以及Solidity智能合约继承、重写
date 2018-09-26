@@ -1,0 +1,109 @@
+1.状态变量、函数的权限
+
+一.public
+public类型的状态变量和函数的权限最大，可供外部、子合约、合约内部访问。
+
+pragma solidity ^0.4.4;
+
+contract Animal {
+
+
+    string _birthDay; // 生日
+    int public _age; // 年龄
+    int internal _weight; // 身高
+    string private _name; // 姓名
+    
+
+    function Animal() {
+      _age = 29;
+      _weight = 170;
+      _name = "Lucky dog";
+      _birthDay = "2011-01-01";
+    }
+    
+    function birthDay() constant returns (string) {
+      return _birthDay;
+    }
+    
+    function age() constant public returns (int) {
+      return _age;
+    }
+
+    function height() constant internal returns (int) {
+      return _weight;
+    }
+
+    function name() constant private returns (string) {
+      return _name;
+    }
+    
+}
+
+该合约可供外部调用的一共有三个函数，分别为birthDay，_age，age
+
+age:可以很容易的理解，age函数是由于声明了public权限，而可以被外部调用
+
+birthDay:由于声明函数时，默认的权限类型时public，所以它可以被外部调用
+
+_age:可以看到，在代码中并没有声明名为_age的函数，它的出现时由于代码开头声明了一个public类型的状态变量_age，当一个状态变量的权限为public类型时，它就会自动生成一个可供外部调用的get函数，所以在合约中其实会有一个默认的和状态变量同名的get函数
+
+状态变量默认为internal类型，所以其他的状态变量并不会生成可供外部访问的和状态变量同名的函数
+
+函数声明时，默认为public类型
+状态变量声明时，默认为internal类型
+
+二.internal
+
+internal类型的状态变量可供外部和子合约调用
+
+internal类型的函数和private类型的函数一样，智能合约自己内部调用，和其他语言中的protected不完全一样
+
+pragma solidity ^0.4.4;
+
+contract Animal {
+
+    string _birthDay; // 生日
+    int public _age; // 年龄
+    int internal _weight; // 身高
+    string private _name; // 姓名
+
+    function Animal() {
+      _age = 29;
+      _weight = 170;
+      _name = "Lucky dog";
+      _birthDay = "2011-01-01";
+    }
+
+    function birthDay() constant returns (string) {
+      return _birthDay;
+    }
+
+    function age() constant public returns (int) {
+      return _age;
+    }
+
+    function height() constant internal returns (int) {
+      return _weight;
+    }
+
+    function name() constant private returns (string) {
+      return _name;
+    }
+
+}
+
+
+contract Person is Animal {
+
+    function Person() {
+
+        _age = 50;
+        _weight = 270;
+        _birthDay = "2017-01-01";
+
+    }
+}
+在这个案例中，contract Person is Animal,person合约继承了Animal合约的public/internal的所有状态变量，但时智能继承父合约中的所有public类型的函数，不能继承internal/private的函数
+
+三.private
+

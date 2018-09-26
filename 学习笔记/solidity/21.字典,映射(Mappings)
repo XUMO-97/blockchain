@@ -1,0 +1,89 @@
+语法:
+
+mapping(_KeyType => _ValueType)
+
+字典/映射 其实就是一个一对一键值存储关系
+
+举个例子:
+
+{age:20,height:170,name:xumo}
+
+这就是一个映射，满足_KeyType => _ValueType之间的映射关系，age对应一个20的值，height对应170，name对应xumo
+
+同一个映射中，可以有多个相同的值，但是键必须具备唯一性
+
+案例:
+
+pragma solidity ^0.4.4;
+
+contract MappingExample {
+    
+    // 测试账号
+    
+    // 0xca35b7d915458ef540ade6068dfe2f44e8fa733c
+    
+    // 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c
+    
+    // 0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db
+    
+    mapping(address => uint)  balances;
+
+    function update(address a,uint newBalance) public {
+        balances[a] = newBalance;
+    }
+    
+    // {0xca35b7d915458ef540ade6068dfe2f44e8fa733c: 100,0x14723a09acff6d2a60dcdf7aa4aff308fddc160c: 200,0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db: 300 }
+    
+    function searchBalance(address a) constant public returns (uint) {
+        
+        return balances[a];
+    }
+}
+
+结构体和字典综合案例
+
+pragma solidity ^0.4.4;
+
+contract CrowdFunding {
+    // Defines a new type with two fields.
+    struct Funder {
+        address addr;
+        uint amount;
+    }
+
+    struct Campaign {
+        address beneficiary;
+        uint fundingGoal;
+        uint numFunders;
+        uint amount;
+        mapping (uint => Funder) funders;
+    }
+
+    uint numCampaigns;
+    mapping (uint => Campaign) campaigns;
+
+    function newCampaign(address beneficiary, uint goal) public returns (uint campaignID) {
+        campaignID = numCampaigns++; // campaignID is return variable
+        // Creates new struct and saves in storage. We leave out the mapping type.
+        campaigns[campaignID] = Campaign(beneficiary, goal, 0, 0);
+    }
+
+    function contribute(uint campaignID) public payable {
+        Campaign storage c = campaigns[campaignID];
+        // Creates a new temporary memory struct, initialised with the given values
+        // and copies it over to storage.
+        // Note that you can also use Funder(msg.sender, msg.value) to initialise.
+        c.funders[c.numFunders++] = Funder({addr: msg.sender, amount: msg.value});
+        c.amount += msg.value;
+    }
+
+    function checkGoalReached(uint campaignID) public returns (bool reached) {
+        Campaign storage c = campaigns[campaignID];
+        if (c.amount < c.fundingGoal)
+            return false;
+        uint amount = c.amount;
+        c.amount = 0;
+        c.beneficiary.transfer(amount);
+        return true;
+    }
+}

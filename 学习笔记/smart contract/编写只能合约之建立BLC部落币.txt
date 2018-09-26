@@ -1,0 +1,29 @@
+1.建立文件夹
+2.使用truffle unbox react建立react项目
+3.打开终端，启动testrpc模拟以太坊区块链测试环境
+4.在项目内安装OpenZeppelin函数库
+	$ npm install zeppelin-solidity  最新为 $ npm install openzeppelin-solidity
+5.启动testrpc
+6.在contract下创建BloggerCoin.sol
+代码为：
+pragma solidity ^0.4.4;
+import "zeppelin-solidity/contracts/token/StandardToken.sol";  //通过import来导入StandardToken合约
+
+contract BloggerCoin is StandardToken {  
+	//建立BloggerCoin合约时，让BloggerCoin合约直接继承自StandardToken。
+	//is既是继承。因此BloggerCoin继承了StandardToken所有的状态数据和方法。
+  string public name = "BloggerCoin"; //将这个加密代币取名（name）为BloggerCoin（部落币）
+  string public symbol = "BLC";//代币的代号（symbol）为BLC
+  uint8 public decimals = 4; //最小交易单位（decimals）为4。
+  uint256 public INITIAL_SUPPLY = 666666;//定义了初始代币数目INITIAL_SUPPLY
+	// 当我们把全局变量设为public（公开），编译时就会自动新增一个读取公开变量的ABI接口，我们在truffle console中也可以读取这些变量
+  function BloggerCoin() {  //和合约同名的BloggerCoin方法，就是BloggerCoin合约的构造函函数（constructor）
+    totalSupply_ = INITIAL_SUPPLY;//在构造函数里指定了totalSupply_数目即发行总量
+    balances[msg.sender] = INITIAL_SUPPLY; //将所有的初始代币INITIAL_SUPPLY都指定给msg.sender帐号，也就是用来部署这个合约的帐号
+	//totalSupply定义于ERC20Basic.sol中，balances定义于BasicToken.sol中。
+  }
+}
+
+7.在migrations目录下创建3_deploy_bloggerchain.js
+8.编译 truffle compile
+9.部署 truffle migrate

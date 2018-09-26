@@ -1,0 +1,159 @@
+一.DYnamically-sized byte array
+string是一个动态尺寸的UTF-8编码字符串，它其实是一个特殊的可变字节数组，string是引用类型，而非值类型
+bytes动态字节数组，引用类型
+
+根据经验，在不确定字节数据大小的情况下，我们可以使用string或bytes，而如果我们清楚的知道或者能够将字节数控制在bytes1-bytes32，那么我们就使用bytes-bytes32，这样的话就能降低存储成本
+
+二.常规字符串string转换为bytes
+
+string字符串中没有提供length方法获取字符串长度，也没有提供方法修改某个索引的字节码，不过我们可以将string转换为bytes，再调用length方法获取字节长度，当然可以修改某个索引的字节码
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    bytes4 public g = 0x78756d6f;
+    
+    string public name = "xumo";
+    
+    function gByteLength() constant returns (uint) {
+        
+        return g.length;
+    }
+    
+    function nameBytes() constant returns (bytes) { //将字符串name转换为bytes
+        
+        return bytes(name);
+    }
+    
+    function nameLength() constant returns (uint) {  //用length方法返回字节数
+        return bytes(name).length;
+    }
+    
+    function setNameFirstByteForL(bytes1 z) { //意思为传入一个字节的变量 z
+        
+        // 0x58 => "X"     大写L的值为0x4c
+        bytes(name)[0] = z;通过x[k]=z的形式修改，x是bytes类型的字节数组，k是索引，z是bytes1类型的变量值
+    }
+}
+
+在合约中的setNameFirstByteForL函数处输入"0x58"即可将name的第一位换成X
+
+三.汉字字符串或特殊字符的字符串转换为bytes
+
+1.特殊字符
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    
+    string public name = "a!+&520";
+    
+
+    function nameBytes() constant returns (bytes) {
+        
+        return bytes(name);
+    }
+    
+    function nameLength() constant returns (uint) {
+        
+        return bytes(name).length;
+    }
+    
+}
+
+这个案例中，声明了一个name字符串，值为a!+&520，根据nameBytes和nameLength返回的结果中，我们不难看出，不管是字母、数字、还是特殊符号，每个字母对应一个byte(字节)
+
+2.中文字符串
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    
+    string public name = "徐墨";
+    
+
+    function nameBytes() constant returns (bytes) {
+        
+        return bytes(name);
+    }
+    
+    function nameLength() constant returns (uint) {
+        
+        return bytes(name).length;
+    }
+    
+}
+
+徐墨转换为bytes以后的内容为0xe5be90e5a2a8，一共6个字节，可知一个汉字需要通过3个字节来储存，所以在取字符串时，最好不要带汉字否则计算字符串长度时还得特殊处理
+
+四.创建bytes字节数组
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    
+    bytes public name = new bytes(1);
+    
+    
+    function setNameLength(uint length) {
+        
+        name.length = length;
+    }
+    
+    function nameLength() constant returns (uint) {
+        
+        return name.length;
+    }
+    
+}
+
+在setNameLength函数处输入3
+可以得到默认是0x00的name变为0x000000
+nameLength变为3
+
+五.bytes可变数组length和push两个函数的使用案例
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    // 0x6c697975656368756e
+    // 初始化一个两个字节空间的字节数组
+    bytes public name = new bytes(2);
+    
+    // 设置字节数组的长度
+    function setNameLength(uint len) {
+        
+        name.length = len;
+    }
+    
+    // 返回字节数组的长度
+    function nameLength() constant returns (uint) {
+        
+        return name.length;
+    }
+    
+    // 往字节数组中添加字节
+    function pushAByte(byte b) {
+        
+        name.push(b);
+    }
+    
+}
+
+当字节数组的长度只有2时，如果你通过push往里面添加了一个字节，那么它的长度将变为3，当字节数组里面有3个字节，但是你通过length方法将其长度修改为2时，字节数组中最后一个字节将被从字节数组中移除。
+
+六.总结
+
+对比分析：
+
+不可变字节数组
+我们之前的文章中提到过如果我们清楚我们存储的字节大小，那么我们可以通过bytes1,bytes2,bytes3,bytes4,……,bytes32来声明字节数组变量，不过通过bytesI来声明的字节数组为不可变字节数组，字节不可修改，字节数组长度不可修改。
+
+可变字节数组
+我们可以通过bytes name = new bytes(length) - length为字节数组长度，来声明可变大小和可修改字节内容的可变字节数组。
+

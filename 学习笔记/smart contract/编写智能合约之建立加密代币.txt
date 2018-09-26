@@ -1,0 +1,70 @@
+1.启动testprc
+2.代币合约的基本概念
+	代币合约扮演的角色相当于银行的角色
+	使用者在代币合约中，用自己的以太币帐户地址当作银行帐户
+	可以透过代币合约执行转账（transfer，将代币由一个帐户转到另一个帐户）
+	查询余额（balanceOf，查询指定帐户中拥有的代币）等原本由银行负责的工作
+	因为合约部署在公开区块链上，所有的交易都是公开透明，可供检验的
+3.创建代币合约项目
+	创建文件夹EncryptedToken
+	$ truffle init 创建项目
+	终端执行truffle create contract EncryptedToken命令创建EncryptedToken.sol合约
+	合约代码：
+pragma solidity ^0.4.4; //声明 solidity 版本
+
+contract EncryptedToken {   // 声明类 EncryptedToken
+  uint256 INITIAL_SUPPLY = 666666;  //声明了一个变量INITIAL_SUPPLY，初始化存储了一个666666的整数作为部署当前合约的钱包地址的代币数。
+  mapping(address => uint256) balances; 
+  //balances是一个key类型为address，value类型为uint256的键值对(mapping)，相当于Java中的map、iOS中的NSDictionary。
+  function EncryptedToken() {    //构造函数，合约调用时先执行它
+    balances[msg.sender] = INITIAL_SUPPLY;
+  }
+  // 转账到一个指定的地址
+  function transfer(address _to, uint256 _amount) {
+  //transfer函数是声明用来从转账到指定钱包地址的函数，_to代表转账的目的地地址，_amount代表转账金额。
+    assert(balances[msg.sender] < _amount);
+  //声明了一个断言，当balances[msg.sender] < _amount，即当前钱包余额小于要转账的额度时，就会抛出异常。
+    balances[msg.sender] -= _amount;//从当前钱包额度中减去_amount。
+    balances[_to] += _amount; //将目标地址的额度增加_amount。
+  }
+  // 查看指定地址的余额
+  function balanceOf(address _owner) constant returns (uint256) {
+  // balanceOf(address _owner) 函数是用来查询指定钱包地址的余额，_owner即是指定的钱包地址
+    return balances[_owner];
+  //returns (uint256) 代表返回值的类型为uint256
+  //constant关键字的作用是，当我们调用balanceOf函数时，它会自动调用call()方法
+  //表明只是读书数据，而不需要往区块链写入数据，调用这个方法，不需要花费手续费。
+  }
+}
+
+	编写完成后在migrateions目录下创建2_deploy_contract.js 内容为：
+var EncryptedToken = artifacts.require('./EncryptedToken.sol');
+
+module.exports = function(deployer) {
+  deployer.deploy(EncryptedToken);
+}
+
+4.进行compile和migrate将合约部署到testprc上
+5.打开console控制台
+6.接下来声明一个合约变量存储EncryptedToken合约实例
+	$ EncryptedToken.deployed().then(instance => contract = instance)
+7.转账
+	$ contract.transfer(web3.eth.accounts[1], 666)
+	出现错误转账失败，因为合约代码EncryptedToken.sol中有这么一句代码assert(balances[msg.sender] < _amount);
+	就是只有当balances[msg.sender] 小于_amount时，才不会出现异常
+	所以应该将<符号换成>符号，即当balances[msg.sender]余额不足时抛出异常
+8.重新部署
+	ctrl+d
+	$ rm -rf build/ 
+	编译时，一定要先将build文件夹删除
+	$ truffle compile
+	$ truffle migrate --reset
+	在部署合约时，一定要添加--reset，否则修改后的合约没法部署成功。
+9.声明合约及转账
+	$ truffle console
+	EncryptedToken.deployed().then(instance => contract = instance)
+	contract.balanceOf(web3.eth.coinbase)
+	contract.balanceOf(web3.eth.accounts[1])
+	contract.transfer(web3.eth.accounts[1], 666)
+	contract.balanceOf(web3.eth.coinbase)
+	contract.balanceOf(web3.eth.accounts[1])

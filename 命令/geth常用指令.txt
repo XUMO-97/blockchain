@@ -1,0 +1,54 @@
+> 代表在geth console里面执行， 不加>表示在terminal执行
+
+1.创建账户
+
+$ geth account new
+
+> personal.newAccount("password")
+
+2.查看账户
+
+$ geth account list
+
+3.查看账户余额
+
+> eth.getBalance(eth.accounts[ ])
+
+4.解锁账户
+
+> personal.unlockAccount(eth.accounts[], <password>) 
+
+5.挖矿
+
+> miner.start()
+
+6.结束挖矿
+
+> miner.stop()
+
+7.查看挖矿速率
+
+> miner.getHashrate()
+
+8.查看区块高度
+
+ > eth.blockNumber
+
+9.查看挖矿账户
+
+> eth.coinbase
+
+10.设置挖矿账户
+
+> miner.setEtherbase(eth.accounts[0]) 
+
+11.预估手续费
+
+> bytecode = ""
+
+> web3.eth.estimateGas({data: bytecode})
+
+12.通过交易 Hash 查看交易（Hash 值包含在上面交易返回值中）
+
+>  eth.getTransaction("0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce")
+

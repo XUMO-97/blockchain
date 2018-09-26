@@ -1,0 +1,42 @@
+1.创建好私链所在文件夹
+
+2.配置好Genesis.json创世区块文件并复制到私链所在目录中
+
+3.配置启动私链的命令行参数并在终端运行
+
+geth --identity "MyNodeName" --rpc --rpcport "8086" --rpccorsdomain "*" --datadir "C:\chains\TestChain1" --port "30303" --nodiscover --rpcapi "db,eth,net,web3" --networkid 1006 init ./Genesis.json
+
+在运行指令前必须先在datadir指定的目录中先创建一个chaindata目录
+
+命令解释：
+
+--identity "TestnetMainNode":为你的节点设置一个ID。用于和你们的一系列同伴进行区分
+
+--rpc:在你的节点上激活RPC接口,用于进行智能合约的部署和调试，这参数在geth中默认启用
+
+--rpcport "8080":将端口号设置成8000以上的任何一个你网络中打开的端口,默认是8080
+
+--rpccorsdomain http://chriseth.github.io/browser-solidity/:指定一个可以接收请求来源的以逗号间隔的域名列表（浏览器访问的话，要强制指定该选项）。使用通配符 * 将允许任何url都可以链接到你的RPC实例，实际中一般用*就可以了（我们可以指定监听地址以及端口，如果不写rpcaddr和rpcport的话，就是默认的http://localhost:8545，如果要使用浏览器来访问的话，就要强制指定rpccorsdomain选项，否则的话由于JavaScript调用的同源限制，请求会失败，geth --rpc --rpccorsdomain "http://localhost:3000"）
+
+--datadir "/home/TestChain1":私有链的数据目录，确保与公共以太坊链的数据目录区分开来
+
+--port "30303":这是“网络监听的端口”,您可以用它手动的和你的同伴相连
+
+--nodiscover:添加这个参数，确保没有人能发现你的节点。不然的话，可能有人无意中会链接到你的私有区块链
+
+--rpcapi "db,eth,net,web3":这个命令描述哪些接口可以通过RPC来访问，默认情况下，geth开启的是web3接口
+
+--networkid 1006:设置当前区块链的网络ID，用于区分不同的网络，是一个数字
+
+init:根据创世区块文件启动并初始化一个新的创世区块
+
+4.启用该私有链
+
+geth --datadir "/home/xumo/xmchain/csl" 即可快速启动
+
+也可将该指令保存为.sh(ubuntu) .bat(windows)通过脚本启动
+
+6.使用mist连接私链
+
+mist --rpc /home/xumo/xmchain/csl/geth.ipc
+

@@ -1,0 +1,26 @@
+pragma solidity ^0.4.0;
+contract DeleteDemo {
+    uint public data = 100;
+    uint[] public dataArray = [uint(1),2,3];
+    event e(string _str,uint _u);
+    event eArr(string _str,uint[] _u);
+    
+    
+    function doDelete(){
+        uint x = data; 
+        e("x",x); // x=100
+        delete x;
+        e("after x",x); // x=0
+        
+        e("data",data);  // date = 100
+        delete data;
+        e("after data",data); // date = 0
+        
+        uint[] y = dataArray; 
+        eArr("y",y);   // y = [1,2,3]
+        delete dataArray;
+        eArr("after y",y); // y=0
+    }
+}
+
+delete的作用是将一个值初始化清零，而不是将变量删除

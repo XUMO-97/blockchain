@@ -1,0 +1,29 @@
+字符串可以通过""或者''来表示字符串的值，Solidity中的字符串不像C语言一样以\0结束，比如xumo这个字符串的长度就为我们所看见的字母的个数，它的长度时4
+
+pragma solidity ^0.4.4;
+
+contract StringLiterals{ 
+    
+    string  _name; // 状态变量
+    
+    //构造函数
+    function StringLiterals() {
+        // 将我的微信号初始化
+        _name = "liyc1215";
+    }
+    
+    // set方法
+    function setString(string name) {
+        
+        _name = name;
+    }
+    
+    // get方法
+    function name() constant returns (string) {
+        
+        return _name;
+    }
+    
+}
+
+string字符串不能通过length方法获取其长度

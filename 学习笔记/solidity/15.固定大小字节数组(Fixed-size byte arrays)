@@ -1,0 +1,87 @@
+固定大小字节数组(Fixed-size byte arrays)
+固定大小字节数组可以通过bytes1,bytes2,bytes3,...,bytes32来进行声明,byte的别名就是bytes1
+
+bytes1只能存储一个字节，也就是二进制8位的内容
+bytes2只能存储两个字节，也就是二进制16位的内容
+bytes3只能存储三个字节，也就是二进制24位的内容
+......
+bytes32只能存储三十二个字节，也就是二进制32*8=256位的内容
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    // 0x6c697975656368756e
+    
+    byte public a = 0x6c; // 0110 1100
+    bytes1 public b = 0x6c; // 0110 1100
+    bytes2 public c = 0x6c69; // 0110 1100 0110 1001
+    bytes3 public d = 0x6c6979; // 0110 1100 0110 1001 0111 1001
+    bytes4 public e = 0x6c697975; // 0110 1100 0110 1001 0111 1001 0111 0101
+    
+    // ...
+    
+    bytes8 public f = 0x6c69797565636875; // 0110 1100 0110 1001 0111 1001 0111 0101 0110 0101 0110 0011 0110 1000 0111 0101
+    bytes9 public g = 0x6c697975656368756e; // // 0110 1100 0110 1001 0111 1001 0111 0101 0110 0101 0110 0011 0110 1000 0111 0101 0110 1110
+    
+}
+
+操作运算符
+
+比较运算符：<=, <, ==, !=, >=, >
+位操作符：&, |, ^(异或), ~ (取反), << (左移), >> (右移)
+索引访问：如果x是一个bytesI,那么可以通过x[k](0 < k < I)获取对应索引的字节，PS：x[k]是只读，不可写。
+
+成员函数
+
+.length返回字节的个数(只读)
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    bytes9 public g = 0x6c697975656368756e;
+    
+    function gByteLength() constant returns (uint) {
+        
+        return g.length;
+    }
+    
+}
+
+不可变深度解析
+
+1.长度不可变
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    
+    bytes9  name = 0x6c697975656368756e;
+    
+    function setNameLength(uint length) {
+    
+        // 报错
+        name.length = length;
+    }
+    
+}
+
+2.内部字节不可修改
+
+pragma solidity ^0.4.4;
+
+contract C {
+    
+    
+    bytes9  name = 0x6c697975656368756e;
+    
+    function setNameFirstByte(byte b) {
+        
+        name[0] = b;
+    }
+    
+}
+
+总结:bytesI(1 <= I <= 32)可以声明固定字节大小的字节数组变量，一旦声明，内部的字节和字节数组长度不可修改，当然可以通过索引读取(只读)对应索引的字节，或者通过length读取字节数组的字节数。

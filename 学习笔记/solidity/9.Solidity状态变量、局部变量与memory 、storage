@@ -1,0 +1,137 @@
+1.一段代码清楚认识状态变量、局部变量
+
+pragma solidity ^0.4.4;
+
+contract Person {
+
+    int public _age;    //_age和_name属于状态变量
+    string public _name;
+    
+    function Person(int age,string name) {   //age，name属于局部变量
+          _age = age;
+          _name = name;
+    }
+
+   
+    function f(string name) {    //name，name1属于局部变量
+          var name1 = name;
+          ...
+    }
+}
+
+2.值类型代码演示
+
+pragma solidity ^0.4.4;
+
+contract Person {
+
+    int public _age;
+    
+    function Person(int age) {
+      _age = age;
+    }
+
+    function f() {
+      midifyAge(_age);
+    }
+
+    function midifyAge(int age) {
+      age = 100;
+    }
+}
+
+创建合约时，因为构造函数中需要传入一个参数age，传入值29
+合约创建完成后，可以在界面看到_age的初始值为29
+接下来我们切换到f方法，然后点击执行，因为_age是值类型，所以在函数传参或者将值类型的变量值赋值给一个新变量，当我们尝试修改新变量时，原来的值类型变量值并不会发生任何变化，在本案例中，当我们调用midifyAge(_age)代码时，我们可以理解成，创建了一个临时变量age，并且将_age的值传给了age，因为是值传递，当我们尝试在midifyAge函数中修改新变量age的值时，原来的变量值_age的值保持不变
+
+3.引用类型memory/storage
+
+引用类型的变量有两种，memory和storage
+
+memory(值传递)
+
+pragma solidity ^0.4.4;
+
+contract Person {
+
+    string public  _name;
+    
+    function Person() {
+        _name = "xumo";
+    }
+
+    function f() {
+        
+        modifyName(_name);
+    }
+
+    function modifyName(string name)  {  // 等价于function modifyName(string memory name)
+    
+        var name1 = name;                // 等价于 string name1 = name   2x2=四种随意换
+        bytes(name1)[0] = 'X';
+    }
+}
+
+不难看出，当引用类型作为函数参数时，它的类型默认为momory，函数参数为memory类型的变量给一个变量赋值时，这个变量的类型必须和函数参数类型一致，所以可以用 string memory name1 = name; 或者 var name1 = name; var声明一个变量时，这个变量的类型最终由赋给它值的类型决定。
+
+
+
+任何函数参数当它的类型为引用型时，这个函数参数都默认为memory，memory类型的变量会临时拷贝一份存储到内存中，当我们将这个参数值赋给一个新的变量，并尝试去修改这个新的变量的值时，最原始的变量的值并不会发生变化，如上案例中，创建合约时，_name的值为xumo，当我们调用f()函数时，f()函数会将_name的值赋给临时的memory变量name，换句话说，因为name的类型为memory，所以name和_name会分别指向不同的对象，当我们尝试去修改name指针指向的值时，_name所指向的内容不会发生变化。
+
+
+storage(指针传递)
+当函数参数为memory类型时，相当于值传递，而storage类型的函数参数将是指针传递
+
+如果要在modifyName函数中通过传递过来的指针修改_name的值，那么必须将函数参数的类型显示设置为storage类型，storage类型拷贝的不是值，而是_name指针，当调用modifyName(_name)函数时，相当于同事有_name，name，name1三个指针同时指向一个对象，我们可以通过三个指针中的任何一个指针修改他们共同指向的内容的值。
+
+pragma solidity ^0.4.4;
+
+contract Person {
+
+    string public  _name;
+    
+    function Person() {
+        _name = "xumo";
+    }
+
+    function f() {
+        
+        modifyName(_name);
+    }
+
+    function modifyName(string storage name)  {
+    
+        var name1 = name;    //等价与string name1 = name;
+        bytes(name1)[0] = 'X';
+    }
+}
+
+上述代码会报错，错误为  function modifyName(string storage name)   
+错误原因:函数默认为public类型，但当我们的函数参数如果为storage类型时，函数的类型必须为internal或者private
+将代码修改为 function modifyName(string storage name) internal {}
+
+正确代码：
+
+pragma solidity ^0.4.4;
+
+contract Person {
+
+    string public  _name;
+    
+    function Person() {
+        _name = "xumo";
+    }
+
+    function f() {
+        
+        modifyName(_name);
+    }
+
+    function modifyName(string storage name) internal {
+    
+        var name1 = name;
+        bytes(name1)[0] = 'X';
+    }
+}
+
+部署该合约后，name初始值为xumo,调用f()函数后，name为Xumo

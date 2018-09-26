@@ -1,0 +1,92 @@
+1.安装Node.js
+	$ apt-get install nodejs
+2.安装truffle框架与testrpc测试环境
+	国内可先用$ npm install -g cnpm --registry=https://registry.npm.taobao.org安装cnpm使用淘宝npm镜像
+	再使用$ cnpm install -g ethereumjs-testrpc truffle
+3.启动以太坊测试环境
+	$ testrpc
+	会自动建立十个账户与每个账户对应的私匙
+	创建私链所在文件夹
+4.开启新终端	
+	$ truffle init
+	创建一个新的以太坊项目
+	目录结构：
+	/contracts:存放智能合约原始代码的地方，可以看到里面已经有三个sol文件，我们开发的HelloWorld.sol文件就存放在这里。
+	/migrations:这是 Truffle用来部署智能合约的功能，待会儿我们会修改2_deploy_contracts.js来部署HelloWorld.sol。
+	/test: 测试智能合约的代码放在这里，支持js 与 sol 测试。 
+	truffle.js: Truffle 的设置文档。
+5.创建Helloworld.sol
+	在contracts文件夹下新建HelloWorld.sol文件。
+	当然也可以直接在HelloWorld路径下面直接执行truffle create contract HelloWorld命令来创建HelloWorld.sol。
+	
+	Helloworld.sol的内容：
+
+pragma solidity ^0.4.4; //声明solidity版本
+
+contract HelloWorld {  //声明合约
+  function sayHello() returns (string) {   //如果传入参数，返回一个Hello World
+    return ("Hello World");
+  }
+}
+
+6.编译
+	$ truffle compile 
+	将HelloWorld.sol原始码编译成Ethereum bytecode。
+	编译成功后，会在HelloWorld文件夹下面的build/contracts文件夹下面看见HelloWorld.json文件。
+
+7.部署
+	truffle框架中提供了方便部署合约的脚本。打开migrations/2_deploy_contracts.js文件（脚本使用Javascript编写），将内容修改如下：
+var HelloWorld = artifacts.require("HelloWorld");
+module.exports = function(deployer) {
+  deployer.deploy(HelloWorld);
+};
+
+	使用artifacts.require语句来取得准备部署的合约。使用deployer.deploy语句将合约部署到区块链上。
+	这边HelloWorld是contract的名称而不是文件名。因此可以用此语法读入任一.sol文件中的任一合约。
+	$ truffle migrate
+
+	错误：Error: No network specified. Cannot determine current network.
+	解决方法：需要在truffle.js配置
+module.exports = { // See // to customize your Truffle configuration!
+
+  networks: {
+
+    development: {
+
+    host: "localhost",
+
+    port: 8545,
+
+    network_id: "*" // Match any network id
+
+    }
+
+  }
+
+};
+
+	其中port端口为testrpc的端口
+8.与合约互动
+	$ truffle console 运行交互式控制台
+	$ Helloworld.deployed().then(instance => contract = instance)
+	用Helloworld.deployed().then调取Helloworld合约的Instance（实例），并保存到contract变量中方便以后调用。
+9.加入新方法
+	在HelloWorld.sol中再加入一个echo方法，echo方法接受输入一个参数，并回传传送的参数。
+function echo(string name) constant returns (string) {
+    return name;
+}
+	新的echo方法中传入了一个name参数。
+	我们也为echo方法加入一个constant声明，表示调用这个方法并不会改变区块链的状态。
+	如此一来，透过truffle-contract来调用此方法时，会自动选用call来呼叫，也不需要额外提供gas。
+	编写好新的Helloworld.sol后 用 truffle compile重新编译 
+	再用truffle migrate --reset 重新部署合约
+	如果还是使用 truffle migrate会提示Using network 'development'.Network up to date.即网络上的合约都是最新的
+	但是实际上新增的方法没有添加到内存块链上，实际开发中需要改写migrations中的脚本，但是开发用的内存块链可以随意修改，所以直接重新部署一次
+	部署成功后 使用truffle console运行控制台 
+	输入Helloworld.deployed().then(instance => contract = instance)来进行交互
+	输入contract.echo("xmnb")返回xmnb
+	echo方法会传回输入的内容
+	同时因为声明了constant，不需要直接调用call()方法，truffle会自动选用call来呼叫
+	
+
+
