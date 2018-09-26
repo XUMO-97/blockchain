@@ -114,6 +114,7 @@ contract vote {
         }
     }
 
+    //显示投票最多的胜者的name
     function winname() public view returns(bytes32 winnername){
         if(proposals[winid()].name == proposals[0].name){
             //设置一个弃票主题，将命名的第一个主题作为弃票主题
