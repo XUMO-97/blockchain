@@ -4,7 +4,8 @@
 
 3.配置启动私链的命令行参数并在终端运行
 
-geth --identity "MyNodeName" --rpc --rpcport "8086" --rpccorsdomain "*" --datadir "C:\chains\TestChain1" --port "30303" --nodiscover --rpcapi "db,eth,net,web3" --networkid 1006 init ./Genesis.json
+
+geth --identity "MyNodeName" --rpc --rpcport "8545" --rpccorsdomain "*" --datadir "/home/xumo/xmchain/web3" --port "30303" --nodiscover --rpcapi "db,eth,net,web3" --networkid 1006 init ./Genesis.json
 
 在运行指令前必须先在datadir指定的目录中先创建一个chaindata目录
 
@@ -13,6 +14,8 @@ geth --identity "MyNodeName" --rpc --rpcport "8086" --rpccorsdomain "*" --datadi
 --identity "TestnetMainNode":为你的节点设置一个ID。用于和你们的一系列同伴进行区分
 
 --rpc:在你的节点上激活RPC接口,用于进行智能合约的部署和调试，这参数在geth中默认启用
+
+--rpcaddr:HTTP-RPC 服务ip地址
 
 --rpcport "8080":将端口号设置成8000以上的任何一个你网络中打开的端口,默认是8080
 
@@ -32,7 +35,7 @@ init:根据创世区块文件启动并初始化一个新的创世区块
 
 4.启用该私有链
 
-geth --datadir "/home/xumo/xmchain/csl" 即可快速启动
+geth --identity "web3" --rpc --rpcport "8545" --rpccorsdomain "*" --datadir "/home/xumo/xmchain/web3" --port "30303" --nodiscover --rpcapi "db,eth,net,web3" --networkid 1006 console 即可快速启动
 
 也可将该指令保存为.sh(ubuntu) .bat(windows)通过脚本启动
 
