@@ -1,0 +1,47 @@
+新建site文件夹
+
+创建index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello IPFS!</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <h1>Hello IPFS!</h1>
+</body>
+</html>
+
+创建一个style.css文件
+
+h1 {
+  color: green;
+}
+
+添加到ipfs
+
+ipfs add -r site/
+
+added QmWG5rbgT9H77TGq49RXNoqN8M7DNKMnMX425nkmCB6BjS site/index.html
+added QmfGLJ3mryLvicQqzdsghq4QRhptKJtBAPe7yDJxsBGSuy site/style.css
+added QmdVEGkT5u7LtzzatTrn8JGNEF3fpuMPVs2rPCfvqRykRp site
+
+最后一行是项目根目录的hash，你先通过ipfs daemon同步网络(也可以一直开着deamon同步省事)，然后可以通过https://ipfs.io/ipfs/<你的项目根目录hash>，即https://ipfs.io/ipfs/QmdVEGkT5u7LtzzatTrn8JGNEF3fpuMPVs2rPCfvqRykRp访问项目
+
+发布到IPNS
+
+当我们修改网站内容重新添加到ipfs时，hash会发生变化，当我们网站更新时，我们可以将网站发布到IPNS，在IPNS中，允许我们节点的域名空间中引用一个IPFS hash，也就是说我们可以通过节点ID对项目根目录的IPFS HASH进行绑定，以后我们访问网站时直接通过节点·ID访问即可，当我们更新博客时，重新发布到IPNS`即可
+
+ipfs name publish QmdVEGkT5u7LtzzatTrn8JGNEF3fpuMPVs2rPCfvqRykRp
+
+ipfs id
+
+	"ID": "Qmc299nnAuWoauAE1MMsNmb2eWhRNbNZDCdWtjTktsX7Wq"
+
+通过ipns访问
+
+https://ipfs.io/ipns/Qmc299nnAuWoauAE1MMsNmb2eWhRNbNZDCdWtjTktsX7Wq
+
+网站数据修改后 需要重新ipfs name publish新的哈希值 才能在ipns上更新

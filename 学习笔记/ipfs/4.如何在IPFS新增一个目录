@@ -1,0 +1,20 @@
+使用ipfs add -r可以上传一整个目录
+
+ipfs add -r xumo
+
+added QmQd47QpDbgqNW8AHb4wUdiYa9F2747HYq7TESBHiUkFTc xumo/file.txt
+added Qmbrg5JNCMKfBFBTFjWmLkkTTTi2xTvab77jtCkeQfeAz5 xumo
+
+可以通过三种方式查看xumo目录下的file文件
+
+ipfs cat QmQd47QpDbgqNW8AHb4wUdiYa9F2747HYq7TESBHiUkFTc
+
+ipfs cat /ipfs/QmQd47QpDbgqNW8AHb4wUdiYa9F2747HYq7TESBHiUkFTc
+
+ipfs cat /ipfs/Qmbrg5JNCMKfBFBTFjWmLkkTTTi2xTvab77jtCkeQfeAz5/file.txt
+
+可以打开网页
+
+https://ipfs.io/ipfs/Qmbrg5JNCMKfBFBTFjWmLkkTTTi2xTvab77jtCkeQfeAz5
+
+访问ipfs网络上的该目录及目录中的文件

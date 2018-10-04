@@ -1,0 +1,19 @@
+1.通过命令将文件添加到节点
+
+ipfs add file.txt 
+
+使用ipfs cat <refs>可以查看文本内容
+
+如果是图片内容无法用cat查看，可以通过ipfs get <refs>下载后查看
+
+2.将节点数据同步到ipfs网络
+
+ipfs daemon
+
+之后就可以在网页打开
+
+ipfs.io/ipfs/refs
+
+就可以查看对应哈希值的文件
+
+

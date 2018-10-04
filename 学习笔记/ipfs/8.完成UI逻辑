@@ -1,0 +1,43 @@
+拷贝下面的代码，将src/App.js里面的代码直接替换掉。
+
+import React, { Component } from 'react';
+import './App.css';
+
+class App extends Component {
+
+
+      constructor(props) {
+          super(props);
+          this.state = {
+            strHash: null,
+            strContent: null
+          }
+      }
+
+    render() {
+      return (
+        <div className="App">
+          <input
+            ref="ipfsContent"
+            style=/>
+          <button onClick={() => {
+            let ipfsContent = this.refs.ipfsContent.value;
+            console.log(ipfsContent);
+          }}>提交到IPFS</button>
+
+          <p>{this.state.strHash}</p>
+
+          <button onClick={() => {
+            console.log('从ipfs读取数据。')
+           }}>读取数据</button>
+           <h1>{this.state.strContent}</h1>
+        </div>
+      );
+    }
+}
+
+export default App;
+
+上面的代码完成的工作是，当我们在输入框中输入一个字符串时，点击提交到IPFS按钮，将文本框中的内容取出来打印，后续我们需要将这个数据上传到IPFS。点击读取数据按钮，我们也只是随便打印了一个字符串，后面需要从IPFS读取数据，然后将读取的数据存储到状态机变量strContent中并且展示出来
+
+

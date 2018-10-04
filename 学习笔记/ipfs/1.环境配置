@@ -1,0 +1,54 @@
+1. IPFS简介
+IPFS（InterPlanetary File System）是一个点对点的分布式超媒体分发协议，它整合了过去几年最好的分布式系统思路，为所有人提供全球统一的可寻址空间，包括Git、自证明文件系统SFS、BitTorrent和DHT，同时也被认为是最有可能取代HTTP的新一代互联网协议。
+
+IPFS用基于内容的寻址替代传统的基于域名的寻址，用户不需要关心服务器的位置，不用考虑文件存储的名字和路径。我们将一个文件放到IPFS节点中，将会得到基于其内容计算出的唯一加密哈希值。哈希值直接反映文件的内容，哪怕只修改1比特，哈希值也会完全不同。当IPFS被请求一个文件哈希时，它会使用一个分布式哈希表找到文件所在的节点，取回文件并验证文件数据。
+
+IPFS是通用目的的基础架构，基本没有存储上的限制。大文件会被切分成小的分块，下载的时候可以从多个服务器同时获取。IPFS的网络是不固定的、细粒度的、分布式的网络，可以很好的适应内容分发网络的要求。这样的设计可以很好的共享各类数据，包括图像、视频流、分布式数据库、整个操作系统、模块链、8英寸软盘的备份，还有静态网站。
+
+IPFS提供了一个友好的WEB访问接口，用户可通过http://ipfs.io/hash 获取IPFS网络中的内容，也许在不久的将来，IPFS协议将会彻底替代传统的HTTP协议。
+
+2. IPFS本地环境安装
+
+在ipfs.io官网上下载好压缩包后解压，ubuntu环境下直接将ipfs文件用终端sudo mv ipfs /usr/local/bin/ipfs 就可以使用，ipfs --version查看版本
+
+3.项目配置
+
+3.1 创建ipfs节点
+
+用 ipfs init命令创建一个ipfs节点，会在根目录生成.ipfs文件，默认存储空间为10G
+
+3.2 修改节点默认存储空间
+如果想自己修改存储空间，可以用
+
+export EDITOR=/usr/bin/vim
+ipfs config edit
+
+将StorageMax后的数据进行修改，输入i可以开始编辑，完成后按ESC，再输入:,再输入wq保存并退出
+
+3.3 查看节点id
+
+ipfs id
+
+3.4 启动节点服务器
+
+cd .ipfs
+
+ipfs daemon
+
+3.5 跨域资源共享CORS配置
+
+为了后续的开发方便，我们还需要对跨域资源共享( CORS )进行配置，ctrl- c退出ipfs，然后按照下面的步骤进行跨域配置。
+
+ctrl- c退出ipfs
+
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "GET", "POST", "OPTIONS"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
+
+3.6验证
+
+启动服务器
+$ ipfs daemon
+新建终端执行下面的命令
+ipfs cat /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
+浏览器输入下面的网址
+打开http://localhost:5001/webui会看到一个漂亮的UI界面。

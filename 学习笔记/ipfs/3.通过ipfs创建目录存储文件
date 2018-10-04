@@ -1,0 +1,9 @@
+ipfs files mkdir /xumo
+
+ipfs files cp /ipfs/QmYuoi8ASvKE5n2S2ST9LTrwrCmCdtgWi4xVgcGmMwreVF /xumo/file.txt
+
+ipfs files ls /xumo
+
+ipfs files read /xumo/file.txt
+
+注意:cp不会改变文件hash，mv会改变hash寻址。

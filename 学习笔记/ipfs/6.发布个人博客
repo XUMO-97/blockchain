@@ -1,0 +1,17 @@
+可以通过Hugo按照官方文档创建一个漂亮的静态博客Hugo官方网站，当然你也可以自己编写，或者使用其他开源项目搭建
+
+1.直接从教程的github下载博客源码
+
+源码地址：http://github.com/liyuechun/ipfs_blogger
+
+2.节点替换
+
+用webstorm打开博客源码目录，将其中d的QmdKXkeEWcuRw9oqBwopKUa8CgK1iBktPGYaMoJ4UNt1MP 地址全部替换成自己的ipfs节点id Qmc299nnAuWoauAE1MMsNmb2eWhRNbNZDCdWtjTktsX7Wq
+
+接下来用ipfs add -r ipfs_blogger将项目添加到ipfs节点
+
+再使用ipfs name publish 将项目上传到ipfs网络
+
+最后在浏览器打开ipfs.io/ipns/Qmc299nnAuWoauAE1MMsNmb2eWhRNbNZDCdWtjTktsX7Wq
+
+就可以浏览博客

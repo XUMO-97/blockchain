@@ -1,0 +1,26 @@
+1.安装react 
+
+npm install -g create-react-app
+全局安装create-react-app
+
+2.创建react项目
+
+create-react-app ipfs-http
+
+后面为项目名称与文件夹名称，可以随便起
+
+3.运行react项目
+
+npm start
+
+然后可以在浏览器打开http://localhost:3000浏览项目
+
+4.安装ipfs-api
+
+通过npm install --save ipfs-api 会将ipfs-api安装到dependencies依赖环境中，会使react项目无法运行
+
+所以要使用npm uninstall --save ipfs-api卸载ipfs-api，然后react项目可以运行
+
+可以使用npm install --save-dev ipfs-api将ipfs-api安装到devDependencies中
+
+
