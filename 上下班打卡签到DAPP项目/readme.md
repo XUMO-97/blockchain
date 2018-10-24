@@ -14,3 +14,6 @@
 
 目前在打在ethereum-bridge时遇到一些小问题,正在解决中...
 
+成功了!之所以无法在testrpc中向部署好的合约转账是因为没有添加fallback function导致合约不能接受转账
+
+添加fallback function之后就可以完整的部署,并在truffle console与合约交互,但是不太方便,再试试用oraclize的IDE编译

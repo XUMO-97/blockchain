@@ -7,10 +7,14 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.sol";
     DateTime是计算当前时间的合约,为了测试部署方便就直接先包括在合约中
     使用oraclizeAPI来获取当前时间,可能会有几秒钟的误差,不过无伤大雅
 */
+contract usingOraclize {
+
+
+}
 
 
 //此处开始实现程序功能的主要代码即ClockInOut合约的代码
-contract ClockInOut is usingOraclize {
+contract ClockInOut {
 
     //员工结构体
     struct staff {
@@ -44,7 +48,7 @@ contract ClockInOut is usingOraclize {
     }
 
     //构造函数
-    function ClockInOut() public payable {
+    function ClockInOut() public {
         numStaffs = 0;
         //OAR = OraclizeAddrResolverI(0xedc373ce361e7f2d965438829531ea817ec7c322);
     }
@@ -87,7 +91,6 @@ contract ClockInOut is usingOraclize {
     function getHour(uint timestamp) public pure returns (uint8) {
             return uint8((timestamp / 60 / 60) % 24 + 8);
     }
-
     //借助后备函数(fallback function)让合约能够接受转账
     function () payable {
 

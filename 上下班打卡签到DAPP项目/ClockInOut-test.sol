@@ -14,7 +14,8 @@ contract ClockInOut {
     uint numStaffs; //统计员工数量
     mapping (uint => staff) public staffs; //以键对的形式存储员工信息
 
-    //取得当前的时间
+    //取得当前的时间,now为当前部署链上最新区块的时间戳,如果在公链或测试链上部署,会导致十几分钟不等的误差
+
     uint public timestamp = now;
 
     //注意!!由于调用的时间戳为格林尼治时间,在国内使用时需要在getHour处加上8就是北京时间
@@ -64,6 +65,11 @@ contract ClockInOut {
     //调用函数读取统计的员工数量
     function getNumStaffs() public view returns(uint) {
         return numStaffs;
+    }
+
+    //借助后备函数(fallback function)让合约能够接受转账
+    function () payable {
+
     }
 
 }
