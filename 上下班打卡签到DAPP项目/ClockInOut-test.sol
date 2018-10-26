@@ -17,7 +17,8 @@ contract ClockInOut {
         bool clockIn; //是否上班打卡
         bool clockOut; //是否下班签到
         uint registeredTime; //以时间戳形式记录员工注册的时间
-        uint clockDays;//总签到的天数
+        uint clockDays; //总签到的天数
+        uint lastClockInTime; //记录上一次签到的时间
         mapping (uint => clockTime) clockTimes; //签到日期的映射
     }
 
@@ -35,7 +36,7 @@ contract ClockInOut {
             return "该员工号已被注册.";
         }else{
             //创建一个员工对象,并存储到staffs里面
-            staffs[staffId] = staff(staffId,name,true,false,true,now,0);
+            staffs[staffId] = staff(staffId,name,true,false,true,now,0,0);
             numStaffs = numStaffs + 1; //统计员工数
             return "员工注册成功.";
         }
@@ -43,40 +44,61 @@ contract ClockInOut {
 
     //通过输入员工号进行签到
     function clockIn(uint id) public returns(string) {
-        //取得当前的时间,now为当前部署链上最新区块的时间戳,如果在公链或测试链上部署,可能会导致十几分钟不等的误差
-        uint hour = getHour(now);
-        //为测试方便将时间签到时间定为24小时
+        /*
+            得当前的时间,now为当前部署链上最新区块的时间戳,如果在公链或测试链上部署,可能会导致十几分钟不等的误差
+            最好在私链上部署,将新块产生的时间缩小到几分钟,理论上就基本比较实用了
+            当然也可以使用oraclize来获取较为即时的时间,就可以将误差缩小到秒,比较建议这种方法
+        */
+        uint clockInTime = now;
+        uint hour = getHour(clockInTime);
+        uint minute = getMinute(clockInTime);
+        /*
+            假设企业上班签到规定时间为7.30-8.30为测试方便将可签到时间定为24小时
+            staffs[id].clockOut == true && (hour >= 7 && minute >=30) && (hour <= 8 && minute <= 30)
+        */
         if (staffs[id].clockOut == true && hour >= 0 && hour <= 24) {
             staffs[id].clockIn = true;
             staffs[id].clockOut = false;
+            staffs[id].clockDays = staffs[id].clockDays + 1;
+            staffs[id].lastClockInTime = clockInTime;
+            //创建一个临时的memory结构体来调用staff结构体中的clockTime结构体
+            staff storage s = staffs[id];
+            uint clockDaysNow = s.clockDays;
+            //创建一个临时的memory结构体,并将其拷贝到storage中来给clocktime结构体赋值,双重调用可能会有点绕
+            clockTime storage c = s.clockTimes[clockDaysNow];
+            c.time = clockInTime;
             return "签到成功.";
         }else{
             return "签到失败.";
         }
     }
 
-    //输入员工号进行打卡
+    //输入员工号进行打卡,规定下班打卡时间为18时之后,或是昨日忘记打卡,在早晨规定的签到时间之前可以进行打卡
     function clockOut(uint id) public returns(string) {
         /*
-            此处定义变量来取得now的值看似多此一举,浪费了空间
+            此处定义变量来取得now的值看似多此一举,增加了gas
             但是如果直接使用now来进行判定可能会产生误差
             比如在两个now的调用之间忽然产生了一个新块
             虽然这种情况发生的几率异常小,因为两个now之间执行的速度非常快
             但是为了程序逻辑的完整性,还是定义一下
-            因为如果之后使用oraclize调取即时时间的话,必须要这么操作,以保证判定的正确性和稳定性
+            因为如果之后使用oraclize调取即时时间的话,也必须要这么操作,以保证判定的正确性和稳定性
         */
-        uint nowTime = now;
-        uint hour = getHour(nowTime);
-        if (staffs[id].clockIn == true && hour >= 0 && hour <= 24) {
+        uint clockOutTime = now;
+        uint hour = getHour(clockOutTime);
+        uint minute = getMinute(clockOutTime);
+        //hour >= 18
+        if (staffs[id].clockIn == true && hour >= 0) {
             staffs[id].clockOut = true;
             staffs[id].clockIn = false;
-            staffs[id].clockDays = staffs[id].clockDays + 1;
-            //创建一个临时的memory结构体来调用staff结构体中的clockTime结构体
-            staff storage s = staffs[id];
-            uint clockDaysNow = s.clockDays;
-            //创建一个临时的memory结构体,并将其拷贝到storage中来给clocktime结构体赋值,双重调用可能会有点绕
-            clockTime storage c = s.clockTimes[clockDaysNow];
-            c.time = nowTime;
+            return "打卡成功.";
+        }else if (staffs[id].clockIn == true && (clockOutTime - staffs[id].lastClockInTime) >= 82800  && hour <= 8 && minute <= 30) {
+            /*
+                这个if是上一次签到之后,下班忘记打卡的情况,也就是在早晨签到时发现上一次下班忘记点签到
+                所以必须验证现在的时间距上一次签到超过了23小时
+                否则会出现可以在可签到时间内不断重复签到的bug
+            */
+            staffs[id].clockOut = true;
+            staffs[id].clockIn = false;
             return "打卡成功.";
         }else{
             return "打卡失败.";
@@ -88,9 +110,14 @@ contract ClockInOut {
         return numStaffs;
     }
 
-    //调出员工最新签到的时间,仅用于测试程序,正常来说需要打印出所有签到的时间,不过这得配合ui界面来显示,例如一个日历上打钩
-    function getStaffsClockTimes(uint staffId) public returns(uint year,uint month,uint day,uint hour) {
-        //参照打卡函数中的双重调用来获取最新的签到时间
+    //调出某位员工注册的时间
+    function getRegisteredTime(uint staffId) public returns(uint) {
+        return staffs[staffId].registeredTime;
+    }
+
+    //调出某位员工最新签到的时间,仅用于测试程序,正常来说需要打印出所有签到的时间,不过这得配合ui界面来显示,例如一个日历上打钩
+    function getStaffClockTime(uint staffId) public returns(uint year,uint month,uint day,uint hour) {
+        //双重调用结构体中的结构体来获取最新的签到时间
         staff storage s = staffs[staffId];
         uint latestClockDay = s.clockDays;
         clockTime storage c = s.clockTimes[latestClockDay];

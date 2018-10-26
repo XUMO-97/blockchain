@@ -44,7 +44,7 @@ contract ClockInOut is usingOraclize {
     }
 
     //构造函数
-    function ClockInOut() public payable {
+    function ClockInOut() public {
         numStaffs = 0;
         //OAR = OraclizeAddrResolverI(0xedc373ce361e7f2d965438829531ea817ec7c322);
     }
