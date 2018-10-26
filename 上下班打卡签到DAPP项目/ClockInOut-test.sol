@@ -89,13 +89,18 @@ contract ClockInOut {
     }
 
     //调出员工最新签到的时间,仅用于测试程序,正常来说需要打印出所有签到的时间,不过这得配合ui界面来显示,例如一个日历上打钩
-    function getStaffsClockTimes(uint staffId) public returns(string) {
+    function getStaffsClockTimes(uint staffId) public returns(uint year,uint month,uint day,uint hour) {
         //参照打卡函数中的双重调用来获取最新的签到时间
         staff storage s = staffs[staffId];
         uint latestClockDay = s.clockDays;
         clockTime storage c = s.clockTimes[latestClockDay];
         uint latestClockTime = c.time;
-        //此时获取了该员工最新签到时间的时间戳,接下来利用DateTime将它转换成具体的年月日
+        //此时获取了该员工最新签到时间的时间戳,接下来利用DateTime将它转换成具体的年月日后返回
+        year = getYear(latestClockTime);
+        month = getMonth(latestClockTime);
+        day = getDay(latestClockTime);
+        hour = getHour(latestClockTime);
+        return (year,month,day,hour);
     }
 
     //借助后备函数(fallback function)让合约能够接受转账,从而支付gas
